@@ -1,0 +1,68 @@
+{
+  "meta": {
+    "game_id": "game_0003",
+    "code_name": "MG-0003",
+    "title_kr": "픽셀 용병단 키우기",
+    "title_en": "Pixel Mercenary Guild",
+    "version": "0.1.0",
+    "last_updated": "2025-01-01"
+  },
+  "overview": {
+    "genre_tags": ["idle", "jrpg", "combat"],
+    "target_audience": {
+      "age": "15-35",
+      "region": ["KR", "SEA"],
+      "play_style": "casual"
+    },
+    "core_loop": "용병을 육성하고 전투를 진행하며, 방치 시간 동안 자동으로 성장한다",
+    "unique_selling_point": "JRPG 전투와 방치 성장의 조화"
+  },
+  "gameplay": {
+    "core_mechanics": [
+      {
+        "name": "용병 육성",
+        "description": "다양한 용병을 수집하고 레벨업, 장비 강화"
+      },
+      {
+        "name": "JRPG 전투",
+        "description": "턴제 전투 시스템으로 적과 전투"
+      },
+      {
+        "name": "방치 성장",
+        "description": "오프라인 시간 동안 경험치와 자원 획득"
+      }
+    ],
+    "progression": {
+      "type": "stage_and_level",
+      "description": "스테이지 클리어와 용병 레벨업으로 진행"
+    },
+    "session_length": "5-15분"
+  },
+  "economy": {
+    "currencies": [
+      {
+        "name": "골드",
+        "type": "soft",
+        "sources": ["전투 승리", "방치 수익", "퀘스트"],
+        "sinks": ["용병 고용", "장비 강화", "스킬 업그레이드"]
+      },
+      {
+        "name": "보석",
+        "type": "hard",
+        "sources": ["인앱 구매", "업적", "이벤트"],
+        "sinks": ["프리미엄 용병", "경험치 부스트", "골드 구매"]
+      }
+    ],
+    "monetization": {
+      "model": "F2P + IAP",
+      "iap_items": ["보석 패키지", "월정액", "스타터 팩"],
+      "ad_placements": ["보상형 광고 (경험치 2배, 보상 2배)", "인터스티셜 (스테이지 클리어 후)"]
+    }
+  },
+  "technical": {
+    "platform": ["Android", "iOS"],
+    "engine": "Flutter + Flame",
+    "backend": "Firebase",
+    "analytics": "GA4 + BigQuery"
+  }
+}

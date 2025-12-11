@@ -1,0 +1,12 @@
+{
+  "game_id": "game_0003",
+  "code_name": "MG-0003",
+  "title_kr": "픽셀 용병단 키우기",
+  "title_en": "Pixel Mercenary Guild",
+  "genre_tags": ["idle", "jrpg", "combat"],
+  "target_region": ["KR", "SEA"],
+  "engine_version": "1.0.0",
+  "analytics_profile": "default_v1",
+  "created_at": "2025-01-01",
+  "status": "development"
+}
