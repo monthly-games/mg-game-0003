@@ -3,6 +3,11 @@ import 'package:get_it/get_it.dart';
 import 'package:mg_common_game/core/economy/gold_manager.dart';
 import '../game/logic/game_manager.dart';
 
+import '../game/data/hero_data.dart';
+import '../game/data/equipment.dart';
+import '../game/logic/inventory_logic.dart';
+import 'inventory_dialog.dart';
+
 class HeroManagementPanel extends StatefulWidget {
   const HeroManagementPanel({super.key});
 
@@ -56,21 +61,59 @@ class _HeroManagementPanelState extends State<HeroManagementPanel> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (!_gameManager.party.any((h) => h.role.name == 'healer'))
-                      Flexible(
+                    if (!_gameManager.party.any(
+                      (h) => h.role == HeroRole.healer,
+                    ))
+                      Padding(
+                        padding: const EdgeInsets.only(right: 4.0),
                         child: ElevatedButton(
                           onPressed: () => _gameManager.recruitHealer(),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.purpleAccent,
                             padding: const EdgeInsets.symmetric(horizontal: 8),
+                            minimumSize: const Size(60, 30),
                           ),
                           child: const Text(
-                            'Hire (1k)',
-                            style: TextStyle(fontSize: 12),
+                            'Heal (1k)',
+                            style: TextStyle(fontSize: 10),
                           ),
                         ),
                       ),
-                    const SizedBox(width: 8),
+                    if (!_gameManager.party.any((h) => h.role == HeroRole.mage))
+                      Padding(
+                        padding: const EdgeInsets.only(right: 4.0),
+                        child: ElevatedButton(
+                          onPressed: () => _gameManager.recruitMage(),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.deepPurpleAccent,
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            minimumSize: const Size(60, 30),
+                          ),
+                          child: const Text(
+                            'Mage (3k)',
+                            style: TextStyle(fontSize: 10),
+                          ),
+                        ),
+                      ),
+                    if (!_gameManager.party.any(
+                      (h) => h.role == HeroRole.assassin,
+                    ))
+                      Padding(
+                        padding: const EdgeInsets.only(right: 4.0),
+                        child: ElevatedButton(
+                          onPressed: () => _gameManager.recruitAssassin(),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.redAccent,
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            minimumSize: const Size(60, 30),
+                          ),
+                          child: const Text(
+                            'Asn (2k)',
+                            style: TextStyle(fontSize: 10),
+                          ),
+                        ),
+                      ),
+                    const SizedBox(width: 4),
                     StreamBuilder<int>(
                       stream: _goldManager.onGoldChanged,
                       initialData: _goldManager.currentGold,
@@ -98,35 +141,69 @@ class _HeroManagementPanelState extends State<HeroManagementPanel> {
               itemBuilder: (context, index) {
                 final hero = _gameManager.party[index];
 
-                // Color logic
+                // Role Color
                 Color roleColor = Colors.grey;
-                if (hero.role.name == 'tank')
+                if (hero.role.name == 'tank') {
                   roleColor = Colors.blue;
-                else if (hero.role.name == 'archer')
+                } else if (hero.role.name == 'archer') {
                   roleColor = Colors.green;
-                else if (hero.role.name == 'healer')
+                } else if (hero.role.name == 'healer') {
                   roleColor = Colors.purpleAccent;
+                }
 
                 return Card(
                   color: const Color(0xFF333333),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: roleColor,
-                      child: Text(
-                        hero.id.length > 1 ? hero.id[1].toUpperCase() : 'H',
-                      ),
-                    ),
-                    title: Text(
-                      '${hero.name} (Lv.${hero.level})',
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                    subtitle: Text(
-                      'HP: ${hero.hp.value.toInt()} / ATK: ${hero.atk.value.toInt()}',
-                      style: const TextStyle(color: Colors.white70),
-                    ),
-                    trailing: ElevatedButton(
-                      onPressed: () => _gameManager.upgradeHero(hero),
-                      child: const Text('UP (50G)'),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        // 1. Hero Info
+                        ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: CircleAvatar(
+                            backgroundColor: roleColor,
+                            child: Text(
+                              hero.id.length > 1
+                                  ? hero.id[1].toUpperCase()
+                                  : 'H',
+                            ),
+                          ),
+                          title: Text(
+                            '${hero.name} (Lv.${hero.level})',
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          subtitle: Text(
+                            'HP: ${hero.currentHp.toInt()} / ATK: ${hero.currentAtk.toInt()} / DEF: ${hero.currentDef.toInt()}',
+                            style: const TextStyle(color: Colors.white70),
+                          ),
+                          trailing: ElevatedButton(
+                            onPressed: () => _gameManager.upgradeHero(hero),
+                            child: const Text('UP (50G)'),
+                          ),
+                        ),
+                        const Divider(color: Colors.white24),
+                        // 2. Equipment Slots
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _buildEquipmentSlot(
+                              context,
+                              hero,
+                              EquipmentType.weapon,
+                            ),
+                            _buildEquipmentSlot(
+                              context,
+                              hero,
+                              EquipmentType.armor,
+                            ),
+                            _buildEquipmentSlot(
+                              context,
+                              hero,
+                              EquipmentType.accessory,
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 );
@@ -136,5 +213,94 @@ class _HeroManagementPanelState extends State<HeroManagementPanel> {
         ],
       ),
     );
+  }
+
+  Widget _buildEquipmentSlot(
+    BuildContext context,
+    HeroData hero,
+    EquipmentType type,
+  ) {
+    final equipped = hero.equipment[type];
+    final bool isEmpty = equipped == null;
+
+    return InkWell(
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (ctx) => InventoryDialog(
+            filterType: type,
+            onEquip: (item) {
+              final invLogic = GetIt.I<InventoryLogic>();
+              invLogic.equipItem(hero, item);
+              setState(() {}); // Refresh UI
+            },
+          ),
+        );
+      },
+      onLongPress: !isEmpty
+          ? () {
+              // Unequip
+              final invLogic = GetIt.I<InventoryLogic>();
+              invLogic.unequipItem(hero, type);
+              setState(() {});
+            }
+          : null,
+      child: Container(
+        width: 80,
+        height: 60,
+        decoration: BoxDecoration(
+          color: Colors.black26,
+          border: Border.all(
+            color: isEmpty ? Colors.grey : _getRarityColor(equipped.rarity),
+            width: isEmpty ? 1 : 2,
+          ),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              _getTypeIcon(type),
+              color: isEmpty ? Colors.white24 : Colors.white,
+              size: 20,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              isEmpty ? 'Empty' : equipped.name,
+              style: TextStyle(
+                color: isEmpty ? Colors.grey : Colors.white,
+                fontSize: 10,
+                overflow: TextOverflow.ellipsis,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  IconData _getTypeIcon(EquipmentType type) {
+    switch (type) {
+      case EquipmentType.weapon:
+        return Icons.golf_course;
+      case EquipmentType.armor:
+        return Icons.shield;
+      case EquipmentType.accessory:
+        return Icons.ring_volume;
+    }
+  }
+
+  Color _getRarityColor(Rarity rarity) {
+    switch (rarity) {
+      case Rarity.common:
+        return Colors.white;
+      case Rarity.rare:
+        return Colors.blue;
+      case Rarity.epic:
+        return Colors.purple;
+      case Rarity.legendary:
+        return Colors.orange;
+    }
   }
 }

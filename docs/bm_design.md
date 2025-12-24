@@ -1,7 +1,13 @@
-# 픽셀 용병단 키우기 - BM 설계 문서
+﻿# 픽셀 용병단 키우기 - BM 설계 문서
 
 > game_id: game_0003
 > repo: mg-game-0003
+> title_kr: 픽셀 용병단 키우기
+> title_en: Pixel Mercenary Guild
+> genre_tags: idle, jrpg, combat
+> doc_type: bm_design
+> source_of_truth: docs/design/gdd_game_0003.json
+> last_updated: 2025-12-19
 
 ---
 

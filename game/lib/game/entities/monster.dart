@@ -2,7 +2,7 @@ import 'package:flame/components.dart';
 import 'package:flame/palette.dart';
 import 'package:flutter/material.dart';
 
-class MonsterEntity extends PositionComponent {
+class MonsterEntity extends SpriteComponent with HasGameRef {
   double maxHp = 50;
   double hp = 50;
   double speed = 50;
@@ -22,6 +22,12 @@ class MonsterEntity extends PositionComponent {
     speed = isBoss ? 30 : 50; // Boss moves slower
   }
 
+  @override
+  Future<void> onLoad() async {
+    final spriteName = isBoss ? 'monster_boss.png' : 'monster_basic.png';
+    sprite = await gameRef.loadSprite(spriteName);
+  }
+
   bool get isDead => hp <= 0;
 
   @override
@@ -36,15 +42,7 @@ class MonsterEntity extends PositionComponent {
 
   @override
   void render(Canvas canvas) {
-    // Boss = Purple, Mob = Red
-    final paint = isBoss
-        ? BasicPalette.purple.paint()
-        : BasicPalette.red.paint();
-    if (isBoss) {
-      canvas.drawRect(size.toRect(), paint); // Square Boss
-    } else {
-      canvas.drawCircle(Offset(size.x / 2, size.y / 2), 16, paint);
-    }
+    super.render(canvas);
 
     // HP Bar
     final hpPct = hp / maxHp;

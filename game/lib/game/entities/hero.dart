@@ -3,7 +3,7 @@ import 'package:flame/palette.dart';
 import 'package:flutter/material.dart';
 import '../data/hero_data.dart';
 
-class HeroEntity extends PositionComponent {
+class HeroEntity extends SpriteComponent with HasGameRef {
   final HeroData data;
   double _currentHp = 0;
 
@@ -12,26 +12,36 @@ class HeroEntity extends PositionComponent {
     _currentHp = data.hp.value;
   }
 
+  @override
+  Future<void> onLoad() async {
+    String spriteName;
+    switch (data.role) {
+      case HeroRole.tank:
+        spriteName = 'hero_knight.png';
+        break;
+      case HeroRole.archer:
+        spriteName = 'hero_ranger.png';
+        break;
+      case HeroRole.healer:
+        spriteName = 'hero_cleric.png';
+        break;
+      case HeroRole.mage:
+        spriteName = 'hero_mage.png';
+        break;
+      case HeroRole.assassin:
+        spriteName = 'hero_assassin.png';
+        break;
+    }
+    sprite = await gameRef.loadSprite(spriteName);
+  }
+
   bool get isDead => _currentHp <= 0;
 
   @override
   void render(Canvas canvas) {
     if (isDead) return;
 
-    Paint paint;
-    switch (data.role) {
-      case HeroRole.tank:
-        paint = BasicPalette.blue.paint();
-        break;
-      case HeroRole.archer:
-        paint = BasicPalette.green.paint();
-        break;
-      case HeroRole.healer:
-        paint = BasicPalette.magenta.paint();
-        break;
-    }
-
-    canvas.drawRect(size.toRect(), paint);
+    super.render(canvas);
 
     // HP Bar
     final hpPct = _currentHp / data.hp.value;

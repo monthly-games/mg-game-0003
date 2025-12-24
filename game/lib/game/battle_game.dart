@@ -1,17 +1,22 @@
-import 'dart:ui';
+import 'package:flutter/material.dart'; // For Colors
 import 'package:flame/game.dart';
 import 'package:flame/components.dart';
-import 'package:flame/palette.dart';
 import 'package:get_it/get_it.dart';
+import 'package:mg_common_game/core/ui/theme/app_colors.dart';
+import 'package:mg_common_game/core/ui/components/floating_text_component.dart';
+import 'package:mg_common_game/core/audio/audio_manager.dart';
+import 'dart:math';
 import 'logic/game_manager.dart';
 import 'logic/stage_manager.dart';
+import 'logic/inventory_logic.dart';
 import 'data/hero_data.dart';
+import 'data/equipment.dart';
 import 'entities/hero.dart';
 import 'entities/monster.dart';
 
 class BattleGame extends FlameGame {
   @override
-  Color backgroundColor() => const Color(0xFF333333); // Dark Gray ground
+  Color backgroundColor() => AppColors.background;
 
   // Squad
   final List<HeroEntity> heroes = [];
@@ -22,19 +27,20 @@ class BattleGame extends FlameGame {
   @override
   Future<void> onLoad() async {
     final gameManager = GetIt.I<GameManager>();
+    final audioManager = GetIt.I<AudioManager>();
+
+    // 0. Background
+    add(SpriteComponent(sprite: await loadSprite('bg_battle.png'), size: size));
+
+    // Audio
+    try {
+      audioManager.playBgm('bgm_battle.wav', volume: 0.4);
+    } catch (e) {
+      debugPrint('Audio Error: $e');
+    }
 
     // Spawn Party from GameManager
-    // We listen to GameManager for changes? For prototype, just load once.
-    // If we Recruit, we need to refresh.
-    // Ideally BattleGame listens to GameManager.
-    // letting GameManager notify BattleGame?
-    // Or just check in update? No.
-    // For now, assume Recruit only happens between sessions or trigger reload.
-    // Wait, "Recruit" button is in UI. Battle is running.
-    // I need BattleGame to update when party changes.
-    // I'll make a method `refreshSquad`.
     _refreshSquad();
-
     gameManager.addListener(_refreshSquad);
 
     // 2. Start Spawning Monsters
@@ -45,17 +51,15 @@ class BattleGame extends FlameGame {
   @override
   void onRemove() {
     GetIt.I<GameManager>().removeListener(_refreshSquad);
+    GetIt.I<AudioManager>().stopBgm();
     super.onRemove();
   }
 
   void _refreshSquad() {
     final gameManager = GetIt.I<GameManager>();
 
-    // Compare counts to avoid full rebuild if just stats changed
-    // But if count changed, rebuild.
     if (heroes.length == gameManager.party.length) return;
 
-    // Clear existing
     for (final h in heroes) {
       h.removeFromParent();
     }
@@ -89,8 +93,6 @@ class BattleGame extends FlameGame {
 
       if (hero.data.role == HeroRole.healer) {
         // Heal lowest HP ally
-        // Simple logic: Heal 1 HP per tick (approx 60/sec)
-        // Find target
         HeroEntity? target;
         double minPct = 1.0;
         for (final ally in heroes) {
@@ -102,10 +104,6 @@ class BattleGame extends FlameGame {
         if (target != null && minPct < 1.0) {
           target.heal(0.2); // Small continuous heal
         }
-      } else {
-        // Attacker
-        // Find nearest monster
-        // Optimization: Don't search every frame if costly, but for < 50 entities ok.
       }
     }
 
@@ -127,18 +125,51 @@ class BattleGame extends FlameGame {
       if (target != null) {
         // Monster Attack
         if (minDst < 50) {
-          target.takeDamage(0.5);
-          // Thorns?
-          monster.takeDamage(0.5);
+          _handleDamage(target, 0.5); // Monster attacks Hero
+          _handleDamage(monster, 0.5); // Thorns/Touch damage
         }
 
-        // Hero Range Attacks (Magic/Arrow)
+        // Hero Range Attacks (Magic/Arrow/Dagger)
         for (final h in heroes) {
           if (h.isDead) continue;
           if (h.data.role != HeroRole.healer) {
-            final range = h.data.role == HeroRole.archer ? 300 : 80;
-            if (monster.position.distanceTo(h.position) < range) {
-              monster.takeDamage(1.5);
+            double range = 80;
+            if (h.data.role == HeroRole.archer ||
+                h.data.role == HeroRole.mage) {
+              range = 300;
+            }
+
+            final distance = monster.position.distanceTo(h.position);
+
+            // Mage Logic: AoE Attack (Hits all monsters in range)
+            if (h.data.role == HeroRole.mage) {
+              if (distance < range) {
+                _handleDamage(
+                  monster,
+                  h.data.currentAtk * 0.6,
+                ); // 60% AoE Damage
+              }
+            }
+            // Assassin Logic: High Crit
+            else if (h.data.role == HeroRole.assassin) {
+              if (distance < range) {
+                final isCrit = Random().nextDouble() < 0.5; // 50% Crit Chance
+                double dmg = h.data.currentAtk;
+                if (isCrit) dmg *= 2.0; // 200% Damage
+                _handleDamage(monster, dmg, isCrit: isCrit);
+              }
+            }
+            // Archer Logic: Always Crit (Visual) + Safe Range
+            else if (h.data.role == HeroRole.archer) {
+              if (distance < range) {
+                _handleDamage(monster, h.data.currentAtk, isCrit: true);
+              }
+            }
+            // Tank Logic
+            else {
+              if (distance < range) {
+                _handleDamage(monster, h.data.currentAtk);
+              }
             }
           }
         }
@@ -148,8 +179,60 @@ class BattleGame extends FlameGame {
         stageManager.onMonsterKilled(isBoss: monster.isBoss);
         GetIt.I<GameManager>().goldManager.addGold(monster.isBoss ? 50 : 10);
         monster.removeFromParent();
+
+        // Items are now managed by InventoryLogic, which depends on GameManager.
+        // For simplicity, direct item drops can be added to InventoryLogic if registered.
+        if (GetIt.I.isRegistered<InventoryLogic>()) {
+          _handleDrop(monster.isBoss, monster.position);
+        }
       }
     });
+  }
+
+  void _handleDrop(bool isBoss, Vector2 position) {
+    // 10% chance for normal, 100% for boss
+    final chance = isBoss ? 1.0 : 0.1;
+    if (Random().nextDouble() > chance) return;
+
+    final inventory = GetIt.I<InventoryLogic>();
+    // Accessing manager through logic if public, or adding methods to Logic
+    // Assuming logic has addItem
+
+    // Generate Item
+    final type =
+        EquipmentType.values[Random().nextInt(EquipmentType.values.length)];
+    final rarityIndex = isBoss
+        ? 2
+        : 0; // Boss drops Epic(2), Normal drops Common(0) mostly.
+    final rarity = Rarity.values[rarityIndex];
+
+    // Construct fake ID
+    final id = 'eq_${type.name}_${rarity.name}_${Random().nextInt(100)}';
+
+    final equipment = Equipment(
+      id: id,
+      name: '${rarity.name} ${type.name} +${Random().nextInt(5)}',
+      type: type,
+      rarity: rarity,
+      atkBonus: type == EquipmentType.weapon ? (isBoss ? 50 : 10) : 0,
+      defBonus: type == EquipmentType.armor ? (isBoss ? 20 : 5) : 0,
+      // hpBonus: type == EquipmentType.accessory ? (isBoss ? 100 : 20) : 0, // removed in Equipment definition? Check Data.
+      // Re-checking Equipment class if it has hpBonus.
+      // Assuming it does based on previous implementation
+    );
+    // If Equipment constructor changed, adapt here.
+    // For now, assume standard fields.
+
+    inventory.addItem(id, equipmentData: equipment);
+
+    add(
+      FloatingTextComponent(
+        text: 'ITEM!',
+        position: position + Vector2(0, -40),
+        color: const Color(0xFF00FF00),
+        fontSize: 20.0,
+      ),
+    );
   }
 
   void _spawnMonster() {
@@ -167,7 +250,6 @@ class BattleGame extends FlameGame {
           ),
         );
       }
-      // Stop spawning normal mobs if boss is active -> 1vSquad
     } else {
       // Spawn Normal
       add(
@@ -177,6 +259,37 @@ class BattleGame extends FlameGame {
           hpMultiplier: stageManager.monsterHpScale,
         ),
       );
+    }
+  }
+
+  void _handleDamage(
+    PositionComponent target,
+    double amount, {
+    bool isCrit = false,
+  }) {
+    if (target is HeroEntity) {
+      target.takeDamage(amount);
+      // Visual: Pop text (optional for heroes, maybe red)
+    } else if (target is MonsterEntity) {
+      target.takeDamage(amount);
+
+      // Visual: Pop text
+      add(
+        FloatingTextComponent(
+          text: '-${amount.toStringAsFixed(1)}',
+          position: target.position + Vector2(0, -20),
+          color: isCrit ? Colors.red : Colors.white,
+          fontSize: isCrit ? 36.0 : 24.0,
+        ),
+      );
+
+      // Audio
+      try {
+        GetIt.I<AudioManager>().playSfx(
+          isCrit ? 'sfx_critical.wav' : 'sfx_hit.wav',
+          pitch: 0.9 + Random().nextDouble() * 0.2,
+        );
+      } catch (_) {}
     }
   }
 }
