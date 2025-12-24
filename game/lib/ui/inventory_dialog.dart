@@ -159,7 +159,7 @@ class _InventoryDialogState extends State<InventoryDialog> {
               // Refresh happens via listener
             }
           },
-          child: Text('Up (\$${cost})'),
+          child: Text('Up (\$$cost)'),
         ),
         const SizedBox(width: 8),
         ElevatedButton(

@@ -139,16 +139,16 @@ class ShopScreen extends StatelessWidget {
       final roll = random.nextDouble();
 
       if (isPremium) {
-        if (roll < 0.4)
+        if (roll < 0.4) {
           rarity = Rarity.rare;
-        else if (roll < 0.8)
+        } else if (roll < 0.8)
           rarity = Rarity.epic;
         else
           rarity = Rarity.legendary;
       } else {
-        if (roll < 0.8)
+        if (roll < 0.8) {
           rarity = Rarity.common;
-        else if (roll < 0.95)
+        } else if (roll < 0.95)
           rarity = Rarity.rare;
         else
           rarity = Rarity.epic;

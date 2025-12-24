@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:mg_common_game/core/ui/theme/app_colors.dart';
 import '../../game/logic/prestige_manager.dart';
 import '../../game/logic/stage_manager.dart';
 
