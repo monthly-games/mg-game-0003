@@ -62,7 +62,7 @@ class _GuildScreenState extends State<GuildScreen> {
 
           // Raid Boss (Placeholder)
           Card(
-            color: Colors.red[900]!.withOpacity(0.5),
+            color: Colors.red[900]!.withValues(alpha: 0.5),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(

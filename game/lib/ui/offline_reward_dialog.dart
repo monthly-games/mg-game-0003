@@ -39,7 +39,7 @@ class OfflineRewardDialog extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.black26,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.amber.withOpacity(0.3)),
+                border: Border.all(color: Colors.amber.withValues(alpha: 0.3)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
