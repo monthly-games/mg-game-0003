@@ -11,6 +11,7 @@ import '../prestige/prestige_screen.dart';
 import '../inventory/inventory_screen.dart';
 import '../shop/shop_screen.dart';
 import '../guild/guild_screen.dart';
+import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
 
 class MainGameScreen extends StatefulWidget {
   const MainGameScreen({super.key});
@@ -78,7 +79,7 @@ class _MainGameScreenState extends State<MainGameScreen> {
         onTap: (idx) => setState(() => _selectedIndex = idx),
         backgroundColor: Colors.black87,
         selectedItemColor: AppColors.primary,
-        unselectedItemColor: Colors.grey,
+        unselectedItemColor: MGColors.common,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.colorize), // Sword-like

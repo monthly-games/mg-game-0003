@@ -13,6 +13,7 @@ import 'data/hero_data.dart';
 import 'data/equipment.dart';
 import 'entities/hero.dart';
 import 'entities/monster.dart';
+import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
 
 class BattleGame extends FlameGame {
   @override
@@ -278,7 +279,7 @@ class BattleGame extends FlameGame {
         FloatingTextComponent(
           text: '-${amount.toStringAsFixed(1)}',
           position: target.position + Vector2(0, -20),
-          color: isCrit ? Colors.red : Colors.white,
+          color: isCrit ? MGColors.error : MGColors.textHighEmphasis,
           fontSize: isCrit ? 36.0 : 24.0,
         ),
       );

@@ -4,6 +4,7 @@ import 'package:mg_common_game/systems/inventory/inventory_item.dart';
 import '../../game/logic/inventory_logic.dart';
 import '../../game/logic/game_manager.dart';
 import '../../game/data/equipment.dart';
+import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
 
 class InventoryScreen extends StatelessWidget {
   const InventoryScreen({super.key});
@@ -22,7 +23,7 @@ class InventoryScreen extends StatelessWidget {
           return const Center(
             child: Text(
               'Inventory Empty',
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(color: MGColors.common),
             ),
           );
         }
@@ -65,11 +66,11 @@ class InventoryScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(_getIconForType(equip.type), color: Colors.white, size: 24),
+            Icon(_getIconForType(equip.type), color: MGColors.textHighEmphasis, size: 24),
             if (item.amount > 1)
               Text(
                 'x${item.amount}',
-                style: const TextStyle(fontSize: 10, color: Colors.white),
+                style: const TextStyle(fontSize: 10, color: MGColors.textHighEmphasis),
               ),
           ],
         ),
@@ -80,13 +81,13 @@ class InventoryScreen extends StatelessWidget {
   Color _getRarityColor(Rarity rarity) {
     switch (rarity) {
       case Rarity.common:
-        return Colors.grey;
+        return MGColors.common;
       case Rarity.rare:
-        return Colors.blue;
+        return MGColors.info;
       case Rarity.epic:
         return Colors.purple;
       case Rarity.legendary:
-        return Colors.orange;
+        return MGColors.warning;
     }
   }
 
@@ -127,21 +128,21 @@ class InventoryScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               'ATK: +${equip.atkBonus}',
-              style: const TextStyle(color: Colors.green),
+              style: const TextStyle(color: MGColors.success),
             ),
             Text(
               'DEF: +${equip.defBonus}',
-              style: const TextStyle(color: Colors.green),
+              style: const TextStyle(color: MGColors.success),
             ),
             Text(
               'HP: +${equip.hpBonus}',
-              style: const TextStyle(color: Colors.green),
+              style: const TextStyle(color: MGColors.success),
             ),
             const SizedBox(height: 16),
             const Text(
               'Equip to:',
               style: TextStyle(
-                color: Colors.white,
+                color: MGColors.textHighEmphasis,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -153,10 +154,10 @@ class InventoryScreen extends StatelessWidget {
                 children: gameManager.party
                     .map(
                       (hero) => ListTile(
-                        leading: const Icon(Icons.person, color: Colors.white),
+                        leading: const Icon(Icons.person, color: MGColors.textHighEmphasis),
                         title: Text(
                           hero.name,
-                          style: const TextStyle(color: Colors.white),
+                          style: const TextStyle(color: MGColors.textHighEmphasis),
                         ),
                         trailing: ElevatedButton(
                           onPressed: () {

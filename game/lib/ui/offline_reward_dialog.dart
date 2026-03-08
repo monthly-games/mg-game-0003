@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import '../game/logic/game_manager.dart';
+import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
 
 class OfflineRewardDialog extends StatelessWidget {
   final int goldEarned;
@@ -22,7 +23,7 @@ class OfflineRewardDialog extends StatelessWidget {
             const Text(
               'Welcome Back!',
               style: TextStyle(
-                color: Colors.white,
+                color: MGColors.textHighEmphasis,
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),

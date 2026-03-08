@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import '../../game/logic/prestige_manager.dart';
 import '../../game/logic/stage_manager.dart';
+import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
 
 class PrestigeScreen extends StatelessWidget {
   const PrestigeScreen({super.key});
@@ -57,13 +58,13 @@ class PrestigeScreen extends StatelessWidget {
                   children: [
                     Text(
                       'Current Stage: $currentStage',
-                      style: const TextStyle(color: Colors.white, fontSize: 18),
+                      style: const TextStyle(color: MGColors.textHighEmphasis, fontSize: 18),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'Ascend now to gain +$pendingRelics Relics',
                       style: TextStyle(
-                        color: canPrestige ? Colors.green : Colors.grey,
+                        color: canPrestige ? MGColors.success : MGColors.common,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -84,7 +85,7 @@ class PrestigeScreen extends StatelessWidget {
                     const SizedBox(height: 8),
                     const Text(
                       'Requires Stage 20+',
-                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                      style: TextStyle(color: MGColors.common, fontSize: 12),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -95,7 +96,7 @@ class PrestigeScreen extends StatelessWidget {
               const Text(
                 'Ancient Upgrades',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: MGColors.textHighEmphasis,
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
@@ -142,11 +143,11 @@ class PrestigeScreen extends StatelessWidget {
       color: Colors.grey[850],
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
-        title: Text(title, style: const TextStyle(color: Colors.white)),
-        subtitle: Text(subtitle, style: const TextStyle(color: Colors.grey)),
+        title: Text(title, style: const TextStyle(color: MGColors.textHighEmphasis)),
+        subtitle: Text(subtitle, style: const TextStyle(color: MGColors.common)),
         trailing: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: canAfford ? Colors.blue : Colors.grey,
+            backgroundColor: canAfford ? MGColors.info : MGColors.common,
           ),
           onPressed: canAfford ? onTap : null,
           child: Text('$cost Relics'),

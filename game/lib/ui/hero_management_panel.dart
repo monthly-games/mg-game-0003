@@ -7,6 +7,7 @@ import '../game/data/hero_data.dart';
 import '../game/data/equipment.dart';
 import '../game/logic/inventory_logic.dart';
 import 'inventory_dialog.dart';
+import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
 
 class HeroManagementPanel extends StatefulWidget {
   const HeroManagementPanel({super.key});
@@ -52,7 +53,7 @@ class _HeroManagementPanelState extends State<HeroManagementPanel> {
               const Text(
                 'Squad',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: MGColors.textHighEmphasis,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
@@ -142,17 +143,17 @@ class _HeroManagementPanelState extends State<HeroManagementPanel> {
                 final hero = _gameManager.party[index];
 
                 // Role Color
-                Color roleColor = Colors.grey;
+                Color roleColor = MGColors.common;
                 if (hero.role.name == 'tank') {
-                  roleColor = Colors.blue;
+                  roleColor = MGColors.info;
                 } else if (hero.role.name == 'archer') {
-                  roleColor = Colors.green;
+                  roleColor = MGColors.success;
                 } else if (hero.role.name == 'healer') {
                   roleColor = Colors.purpleAccent;
                 }
 
                 return Card(
-                  color: const Color(0xFF333333),
+                  color: MGColors.cardDark,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
@@ -170,7 +171,7 @@ class _HeroManagementPanelState extends State<HeroManagementPanel> {
                           ),
                           title: Text(
                             '${hero.name} (Lv.${hero.level})',
-                            style: const TextStyle(color: Colors.white),
+                            style: const TextStyle(color: MGColors.textHighEmphasis),
                           ),
                           subtitle: Text(
                             'HP: ${hero.currentHp.toInt()} / ATK: ${hero.currentAtk.toInt()} / DEF: ${hero.currentDef.toInt()}',
@@ -251,7 +252,7 @@ class _HeroManagementPanelState extends State<HeroManagementPanel> {
         decoration: BoxDecoration(
           color: Colors.black26,
           border: Border.all(
-            color: isEmpty ? Colors.grey : _getRarityColor(equipped.rarity),
+            color: isEmpty ? MGColors.common : _getRarityColor(equipped.rarity),
             width: isEmpty ? 1 : 2,
           ),
           borderRadius: BorderRadius.circular(8),
@@ -261,14 +262,14 @@ class _HeroManagementPanelState extends State<HeroManagementPanel> {
           children: [
             Icon(
               _getTypeIcon(type),
-              color: isEmpty ? Colors.white24 : Colors.white,
+              color: isEmpty ? Colors.white24 : MGColors.textHighEmphasis,
               size: 20,
             ),
             const SizedBox(height: 4),
             Text(
               isEmpty ? 'Empty' : equipped.name,
               style: TextStyle(
-                color: isEmpty ? Colors.grey : Colors.white,
+                color: isEmpty ? MGColors.common : MGColors.textHighEmphasis,
                 fontSize: 10,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -294,13 +295,13 @@ class _HeroManagementPanelState extends State<HeroManagementPanel> {
   Color _getRarityColor(Rarity rarity) {
     switch (rarity) {
       case Rarity.common:
-        return Colors.white;
+        return MGColors.textHighEmphasis;
       case Rarity.rare:
-        return Colors.blue;
+        return MGColors.info;
       case Rarity.epic:
         return Colors.purple;
       case Rarity.legendary:
-        return Colors.orange;
+        return MGColors.warning;
     }
   }
 }

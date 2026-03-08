@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mg_common_game/core/economy/gold_manager.dart';
+import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
 
 class GuildScreen extends StatefulWidget {
   const GuildScreen({super.key});
@@ -38,18 +39,18 @@ class _GuildScreenState extends State<GuildScreen> {
                 children: [
                   const Text(
                     'Daily Attendance',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
+                    style: TextStyle(color: MGColors.textHighEmphasis, fontSize: 18),
                   ),
                   const SizedBox(height: 8),
                   const Text(
                     'Get free gold every day!',
-                    style: TextStyle(color: Colors.grey),
+                    style: TextStyle(color: MGColors.common),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: checkedIn ? null : _handleCheckIn,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
+                      backgroundColor: MGColors.info,
                     ),
                     child: Text(checkedIn ? 'Checked In' : 'Check In (+500G)'),
                   ),
@@ -70,13 +71,13 @@ class _GuildScreenState extends State<GuildScreen> {
                   const Text(
                     'Guild Raid',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: MGColors.textHighEmphasis,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Icon(Icons.warning, color: Colors.red, size: 48),
+                  const Icon(Icons.warning, color: MGColors.error, size: 48),
                   const SizedBox(height: 8),
                   const Text(
                     'Coming Soon in v1.1',

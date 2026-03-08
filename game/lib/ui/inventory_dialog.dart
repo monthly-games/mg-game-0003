@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:mg_common_game/systems/inventory/inventory_item.dart';
 import '../game/data/equipment.dart';
 import '../game/logic/inventory_logic.dart';
+import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
 
 class InventoryDialog extends StatefulWidget {
   final EquipmentType? filterType;
@@ -53,7 +54,7 @@ class _InventoryDialogState extends State<InventoryDialog> {
                   ? 'Select ${widget.filterType!.name}'
                   : 'Inventory',
               style: const TextStyle(
-                color: Colors.white,
+                color: MGColors.textHighEmphasis,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
@@ -120,13 +121,13 @@ class _InventoryDialogState extends State<InventoryDialog> {
   Color _getRarityColor(Rarity rarity) {
     switch (rarity) {
       case Rarity.common:
-        return Colors.white;
+        return MGColors.textHighEmphasis;
       case Rarity.rare:
-        return Colors.blue;
+        return MGColors.info;
       case Rarity.epic:
         return Colors.purple;
       case Rarity.legendary:
-        return Colors.orange;
+        return MGColors.warning;
     }
   }
 

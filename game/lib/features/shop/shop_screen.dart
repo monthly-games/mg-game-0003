@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:mg_common_game/core/economy/gold_manager.dart';
 import '../../game/logic/inventory_logic.dart';
 import '../../game/data/equipment.dart';
+import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
 
 class ShopScreen extends StatelessWidget {
   const ShopScreen({super.key});
@@ -84,7 +85,7 @@ class ShopScreen extends StatelessWidget {
                   Text(
                     title,
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: MGColors.textHighEmphasis,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -93,14 +94,14 @@ class ShopScreen extends StatelessWidget {
                     isPremium
                         ? 'High chance for Epic/Legendary'
                         : 'Common equipment',
-                    style: const TextStyle(color: Colors.grey),
+                    style: const TextStyle(color: MGColors.common),
                   ),
                 ],
               ),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: canAfford ? Colors.amber : Colors.grey,
+                backgroundColor: canAfford ? Colors.amber : MGColors.common,
                 foregroundColor: Colors.black,
               ),
               onPressed: canAfford
@@ -178,7 +179,7 @@ class ShopScreen extends StatelessWidget {
           backgroundColor: Colors.black,
           title: const Text(
             'Summon Result',
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: MGColors.textHighEmphasis),
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -209,13 +210,13 @@ class ShopScreen extends StatelessWidget {
   Color _getRarityColor(Rarity rarity) {
     switch (rarity) {
       case Rarity.common:
-        return Colors.grey;
+        return MGColors.common;
       case Rarity.rare:
-        return Colors.blue;
+        return MGColors.info;
       case Rarity.epic:
         return Colors.purple;
       case Rarity.legendary:
-        return Colors.orange;
+        return MGColors.warning;
     }
   }
 }

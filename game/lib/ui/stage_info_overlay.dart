@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import '../game/logic/stage_manager.dart';
+import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
 
 class StageInfoOverlay extends StatelessWidget {
   const StageInfoOverlay({super.key});
@@ -24,7 +25,7 @@ class StageInfoOverlay extends StatelessWidget {
               Text(
                 'Stage ${stageManager.currentStage}',
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: MGColors.textHighEmphasis,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),

@@ -57,13 +57,13 @@ class MGTopBar extends StatelessWidget {
                   const Icon(
                     Icons.shield,
                     size: 16,
-                    color: Colors.white,
+                    color: MGColors.textHighEmphasis,
                   ),
                   const SizedBox(width: 4),
                   Text(
                     'Stage $stageLevel',
                     style: MGTextStyles.hudSmall.copyWith(
-                      color: Colors.white,
+                      color: MGColors.textHighEmphasis,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -74,7 +74,7 @@ class MGTopBar extends StatelessWidget {
             Text(
               'Pixel Mercenary',
               style: MGTextStyles.hud.copyWith(
-                color: Colors.white,
+                color: MGColors.textHighEmphasis,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -105,7 +105,7 @@ class MGTopBar extends StatelessWidget {
                   onPressed: onSettings,
                   size: 36,
                   backgroundColor: Colors.black54,
-                  color: Colors.white,
+                  color: MGColors.textHighEmphasis,
                 ),
               ],
             ],

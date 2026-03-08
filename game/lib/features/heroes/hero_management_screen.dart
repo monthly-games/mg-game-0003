@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import '../../game/logic/game_manager.dart';
 import '../../game/data/hero_data.dart';
+import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
 
 class HeroManagementScreen extends StatelessWidget {
   const HeroManagementScreen({super.key});
@@ -20,7 +21,7 @@ class HeroManagementScreen extends StatelessWidget {
             const Text(
               'My Party',
               style: TextStyle(
-                color: Colors.white,
+                color: MGColors.textHighEmphasis,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
@@ -31,11 +32,11 @@ class HeroManagementScreen extends StatelessWidget {
               (hero) => _buildHeroCard(context, hero, gameManager),
             ),
 
-            const Divider(color: Colors.grey),
+            const Divider(color: MGColors.common),
             const Text(
               'Recruitment',
               style: TextStyle(
-                color: Colors.white,
+                color: MGColors.textHighEmphasis,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
@@ -78,7 +79,7 @@ class HeroManagementScreen extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
-            Icon(Icons.person, color: Colors.white, size: 40),
+            Icon(Icons.person, color: MGColors.textHighEmphasis, size: 40),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
@@ -87,13 +88,13 @@ class HeroManagementScreen extends StatelessWidget {
                   Text(
                     '${hero.name} (Lv.${hero.level})',
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: MGColors.textHighEmphasis,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
                     'ATK: ${hero.currentAtk.toInt()}  HP: ${hero.currentHp.toInt()}',
-                    style: const TextStyle(color: Colors.grey),
+                    style: const TextStyle(color: MGColors.common),
                   ),
                 ],
               ),
@@ -118,7 +119,7 @@ class HeroManagementScreen extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: isOwned ? Colors.grey : Colors.blue,
+          backgroundColor: isOwned ? MGColors.common : MGColors.info,
           padding: const EdgeInsets.all(16),
         ),
         onPressed: isOwned ? null : onTap,
