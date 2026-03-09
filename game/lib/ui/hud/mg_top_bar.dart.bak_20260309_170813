@@ -8,7 +8,6 @@ class MGTopBar extends StatelessWidget {
   final int gems;
   final int? stageLevel;
   final VoidCallback? onSettings;
-  final VoidCallback? onDailyHub;
 
   const MGTopBar({
     super.key,
@@ -16,7 +15,6 @@ class MGTopBar extends StatelessWidget {
     this.gems = 0,
     this.stageLevel,
     this.onSettings,
-    this.onDailyHub,
   });
 
   @override
@@ -100,16 +98,6 @@ class MGTopBar extends StatelessWidget {
                   onTap: null,
                 ),
               ],
-        if (onDailyHub != null)
-          MGIconButton(
-            icon: Icons.calendar_today,
-            onPressed: onDailyHub,
-            size: 44,
-            backgroundColor: MGColors.info.withValues(alpha: 0.8),
-            color: MGColors.textHighEmphasis,
-            tooltip: 'Daily Hub',
-          ),
-        MGSpacing.hXs,
               if (onSettings != null) ...[
                 MGSpacing.hSm,
                 MGIconButton(
