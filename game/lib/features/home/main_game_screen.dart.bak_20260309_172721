@@ -104,7 +104,6 @@ class _MainGameScreenState extends State<MainGameScreen> {
         return MGTopBar(
           gold: snapshot.data ?? 0,
           stageLevel: stageManager.currentStage,
-          onDailyHub: () => Navigator.of(context).pushNamed('/daily-hub'),
         );
       },
     );
