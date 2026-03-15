@@ -143,17 +143,19 @@ class ShopScreen extends StatelessWidget {
       if (isPremium) {
         if (roll < 0.4) {
           rarity = Rarity.rare;
-        } else if (roll < 0.8)
+        } else if (roll < 0.8) {
           rarity = Rarity.epic;
-        else
+        } else {
           rarity = Rarity.legendary;
+        }
       } else {
         if (roll < 0.8) {
           rarity = Rarity.common;
-        } else if (roll < 0.95)
+        } else if (roll < 0.95) {
           rarity = Rarity.rare;
-        else
+        } else {
           rarity = Rarity.epic;
+        }
       }
 
       final type =
