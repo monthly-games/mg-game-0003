@@ -2,7 +2,7 @@ import 'package:flame/components.dart';
 import 'package:flame/palette.dart';
 import 'package:flutter/material.dart';
 
-class MonsterEntity extends SpriteComponent with HasGameRef {
+class MonsterEntity extends SpriteComponent with HasGameReference {
   double maxHp = 50;
   double hp = 50;
   double speed = 50;
@@ -25,7 +25,7 @@ class MonsterEntity extends SpriteComponent with HasGameRef {
   @override
   Future<void> onLoad() async {
     final spriteName = isBoss ? 'monster_boss.png' : 'monster_basic.png';
-    sprite = await gameRef.loadSprite(spriteName);
+    sprite = await game.loadSprite(spriteName);
   }
 
   bool get isDead => hp <= 0;

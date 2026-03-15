@@ -138,7 +138,7 @@ class _HeroManagementPanelState extends State<HeroManagementPanel> {
           Expanded(
             child: ListView.separated(
               itemCount: _gameManager.party.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 8),
+              separatorBuilder: (_, _) => const SizedBox(height: 8),
               itemBuilder: (context, index) {
                 final hero = _gameManager.party[index];
 

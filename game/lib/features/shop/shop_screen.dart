@@ -14,8 +14,9 @@ class ShopScreen extends StatelessWidget {
     final goldManager = GetIt.I<GoldManager>();
     final inventory = GetIt.I<InventoryLogic>();
 
-    return ListenableBuilder(
-      listenable: goldManager,
+    return StreamBuilder<int>(
+      stream: goldManager.onGoldChanged,
+      initialData: goldManager.currentGold,
       builder: (context, _) {
         return Padding(
           padding: const EdgeInsets.all(16.0),

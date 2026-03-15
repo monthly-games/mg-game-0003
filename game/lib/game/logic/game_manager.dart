@@ -166,7 +166,7 @@ class GameManager extends ChangeNotifier implements Saveable {
   }
 
   void softReset() {
-    goldManager.setGold(0); // Reset Gold
+    goldManager.fromSaveData({'amount': 0}); // Reset Gold
 
     // Reset Heroes to Level 1, Base Stats
     for (final hero in party) {

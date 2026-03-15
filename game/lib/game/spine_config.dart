@@ -14,7 +14,7 @@ const kMercenaryLeaderMeta = SpineAssetMeta(
   atlasPath:
       'assets/spine/characters/mercenary_leader/mercenary_leader.atlas',
   skeletonPath:
-      'assets/spine/characters/mercenary_leader/mercenary_leader.skel',
+      'assets/spine/characters/mercenary_leader/mercenary_leader.json',
   animations: ['idle', 'walk', 'attack', 'hit'],
   defaultAnimation: 'idle',
   defaultMix: 0.2,
@@ -28,7 +28,7 @@ const kMercenaryHealerMeta = SpineAssetMeta(
   atlasPath:
       'assets/spine/characters/mercenary_healer/mercenary_healer.atlas',
   skeletonPath:
-      'assets/spine/characters/mercenary_healer/mercenary_healer.skel',
+      'assets/spine/characters/mercenary_healer/mercenary_healer.json',
   animations: ['idle', 'walk', 'attack', 'hit'],
   defaultAnimation: 'idle',
   defaultMix: 0.2,
@@ -42,7 +42,7 @@ const kMercenaryTankMeta = SpineAssetMeta(
   atlasPath:
       'assets/spine/characters/mercenary_tank/mercenary_tank.atlas',
   skeletonPath:
-      'assets/spine/characters/mercenary_tank/mercenary_tank.skel',
+      'assets/spine/characters/mercenary_tank/mercenary_tank.json',
   animations: ['idle', 'walk', 'attack', 'hit'],
   defaultAnimation: 'idle',
   defaultMix: 0.2,

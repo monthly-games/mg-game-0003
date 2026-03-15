@@ -55,6 +55,21 @@ class Equipment {
     return (baseCost * pow(1.5, level - 1)).floor();
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'type': type.index,
+      'type_name': type.name,
+      'rarity': rarity.index,
+      'rarity_name': rarity.name,
+      'atk': atkBonus,
+      'def': defBonus,
+      'hp': hpBonus,
+      'level': level,
+    };
+  }
+
   static Equipment fromId(String id) {
     // Placeholder for static generation
     return const Equipment(

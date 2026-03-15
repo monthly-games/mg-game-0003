@@ -71,7 +71,7 @@ class _InventoryDialogState extends State<InventoryDialog> {
                 width: double.maxFinite,
                 child: ListView.separated(
                   itemCount: items.length,
-                  separatorBuilder: (_, __) =>
+                  separatorBuilder: (_, _) =>
                       const Divider(color: Colors.white24),
                   itemBuilder: (context, index) {
                     final item = items[index];

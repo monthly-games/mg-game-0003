@@ -3,13 +3,13 @@ import 'package:flame/palette.dart';
 import 'package:flutter/material.dart';
 import '../data/hero_data.dart';
 
-class HeroEntity extends SpriteComponent with HasGameRef {
+class HeroEntity extends SpriteComponent with HasGameReference {
   final HeroData data;
   double _currentHp = 0;
 
   HeroEntity({required this.data, required Vector2 position})
     : super(position: position, size: Vector2.all(32), anchor: Anchor.center) {
-    _currentHp = data.hp.value;
+    _currentHp = data.currentHp;
   }
 
   @override
@@ -32,7 +32,7 @@ class HeroEntity extends SpriteComponent with HasGameRef {
         spriteName = 'hero_assassin.png';
         break;
     }
-    sprite = await gameRef.loadSprite(spriteName);
+    sprite = await game.loadSprite(spriteName);
   }
 
   bool get isDead => _currentHp <= 0;
@@ -44,7 +44,7 @@ class HeroEntity extends SpriteComponent with HasGameRef {
     super.render(canvas);
 
     // HP Bar
-    final hpPct = _currentHp / data.hp.value;
+    final hpPct = _currentHp / data.currentHp;
     canvas.drawRect(
       Rect.fromLTWH(0, -10, size.x * hpPct.clamp(0.0, 1.0), 5),
       BasicPalette.red.paint(),
@@ -57,13 +57,13 @@ class HeroEntity extends SpriteComponent with HasGameRef {
 
   void heal(double amount) {
     if (isDead) return;
-    _currentHp = (_currentHp + amount).clamp(0, data.hp.value);
+    _currentHp = (_currentHp + amount).clamp(0, data.currentHp);
   }
 
-  double get hpPercent => _currentHp / data.hp.value;
+  double get hpPercent => _currentHp / data.currentHp;
   double get currentHp => _currentHp;
 
   void respawn() {
-    _currentHp = data.hp.value;
+    _currentHp = data.currentHp;
   }
 }
