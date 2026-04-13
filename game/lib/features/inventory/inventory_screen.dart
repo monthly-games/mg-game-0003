@@ -6,6 +6,7 @@ import '../../game/logic/game_manager.dart';
 import '../../game/data/equipment.dart';
 import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
 
+
 class InventoryScreen extends StatelessWidget {
   const InventoryScreen({super.key});
 
@@ -164,7 +165,7 @@ class InventoryScreen extends StatelessWidget {
                             inventory.equipItem(hero, item);
                             Navigator.pop(ctx);
                           },
-                          child: const Text('Equip'),
+                          child: Text("Roll"),
                         ),
                       ),
                     )

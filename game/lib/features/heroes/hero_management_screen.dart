@@ -4,6 +4,7 @@ import '../../game/logic/game_manager.dart';
 import '../../game/data/hero_data.dart';
 import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
 
+
 class HeroManagementScreen extends StatelessWidget {
   const HeroManagementScreen({super.key});
 
@@ -101,7 +102,7 @@ class HeroManagementScreen extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () => gameManager.upgradeHero(hero),
-              child: const Text('LvUp (50g)'),
+              child: Text("Lv Up 50G"),
             ),
           ],
         ),

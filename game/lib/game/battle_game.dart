@@ -51,8 +51,20 @@ class BattleGame extends FlameGame {
 
   @override
   void onRemove() {
-    GetIt.I<GameManager>().removeListener(_refreshSquad);
-    GetIt.I<AudioManager>().stopBgm();
+    try {
+      if (GetIt.instance.isRegistered<GameManager>()) {
+        GetIt.I<GameManager>().removeListener(_refreshSquad);
+      }
+    } catch (e) {
+      // Ignore errors during cleanup
+    }
+    try {
+      if (GetIt.instance.isRegistered<AudioManager>()) {
+        GetIt.I<AudioManager>().stopBgm();
+      }
+    } catch (e) {
+      // Ignore errors during cleanup
+    }
     super.onRemove();
   }
 

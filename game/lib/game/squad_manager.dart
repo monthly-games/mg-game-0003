@@ -3,7 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:mg_common_game/systems/progression/upgrade_manager.dart';
 
 // ============================================================
-// SquadManager — MG-0003 Mercenary Brigade
+// SquadManager -- MG-0003 Mercenary Brigade
 //
 // Controls squad composition limits and formation bonuses.
 // Upgrades: squad_size, formation_bonus

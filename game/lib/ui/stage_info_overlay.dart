@@ -1,3 +1,4 @@
+import 'package:mg_common_game/core/ui/layout/mg_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import '../game/logic/stage_manager.dart';
@@ -30,7 +31,7 @@ class StageInfoOverlay extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: MGSpacing.md),
               if (stageManager.isBossActive)
                 const Text(
                   '🔥 BOSS 🔥',

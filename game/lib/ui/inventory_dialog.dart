@@ -1,3 +1,4 @@
+import 'package:mg_common_game/core/ui/layout/mg_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mg_common_game/systems/inventory/inventory_item.dart';
@@ -45,7 +46,7 @@ class _InventoryDialogState extends State<InventoryDialog> {
     return Dialog(
       backgroundColor: const Color(0xFF222222),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(MGSpacing.md),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -59,7 +60,7 @@ class _InventoryDialogState extends State<InventoryDialog> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: MGSpacing.md),
             if (items.isEmpty)
               const Text(
                 'No items found.',
@@ -94,7 +95,7 @@ class _InventoryDialogState extends State<InventoryDialog> {
                   },
                 ),
               ),
-            const SizedBox(height: 16),
+            const SizedBox(height: MGSpacing.md),
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: const Text('Close'),
@@ -162,7 +163,7 @@ class _InventoryDialogState extends State<InventoryDialog> {
           },
           child: Text('Up (\$$cost)'),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: MGSpacing.xs),
         ElevatedButton(
           style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent),
           onPressed: () {

@@ -1,8 +1,8 @@
+import 'package:mg_common_game/core/ui/layout/mg_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mg_common_game/core/economy/gold_manager.dart';
 import '../game/logic/game_manager.dart';
-
 import '../game/data/hero_data.dart';
 import '../game/data/equipment.dart';
 import '../game/logic/inventory_logic.dart';
@@ -42,7 +42,7 @@ class _HeroManagementPanelState extends State<HeroManagementPanel> {
   Widget build(BuildContext context) {
     return Container(
       color: const Color(0xFF222222),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(MGSpacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -114,13 +114,12 @@ class _HeroManagementPanelState extends State<HeroManagementPanel> {
                           ),
                         ),
                       ),
-                    const SizedBox(width: 4),
-                    StreamBuilder<int>(
-                      stream: _goldManager.onGoldChanged,
-                      initialData: _goldManager.currentGold,
-                      builder: (context, snapshot) {
+                    const SizedBox(width: MGSpacing.xxs),
+                    AnimatedBuilder(
+                      animation: _goldManager,
+                      builder: (context, child) {
                         return Text(
-                          'Gold: ${snapshot.data}',
+                          'Gold: ${_goldManager.currentGold}',
                           style: const TextStyle(
                             color: Colors.amber,
                             fontSize: 18,
@@ -133,12 +132,12 @@ class _HeroManagementPanelState extends State<HeroManagementPanel> {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: MGSpacing.md),
           // List of Heroes
           Expanded(
             child: ListView.separated(
               itemCount: _gameManager.party.length,
-              separatorBuilder: (_, _) => const SizedBox(height: 8),
+              separatorBuilder: (_, _) => const SizedBox(height: MGSpacing.xs),
               itemBuilder: (context, index) {
                 final hero = _gameManager.party[index];
 
@@ -155,7 +154,7 @@ class _HeroManagementPanelState extends State<HeroManagementPanel> {
                 return Card(
                   color: MGColors.cardDark,
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(MGSpacing.xs),
                     child: Column(
                       children: [
                         // 1. Hero Info
@@ -179,7 +178,7 @@ class _HeroManagementPanelState extends State<HeroManagementPanel> {
                           ),
                           trailing: ElevatedButton(
                             onPressed: () => _gameManager.upgradeHero(hero),
-                            child: const Text('UP (50G)'),
+                            child: Text("Upgrade 50G"),
                           ),
                         ),
                         const Divider(color: Colors.white24),
@@ -265,7 +264,7 @@ class _HeroManagementPanelState extends State<HeroManagementPanel> {
               color: isEmpty ? Colors.white24 : MGColors.textHighEmphasis,
               size: 20,
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: MGSpacing.xxs),
             Text(
               isEmpty ? 'Empty' : equipped.name,
               style: TextStyle(

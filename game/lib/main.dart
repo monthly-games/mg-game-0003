@@ -1,240 +1,125 @@
-import 'package:mg_common_game/mg_common_game.dart' hide PrestigeManager;
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mg_common_game/core/economy/gold_manager.dart';
+import 'package:mg_common_game/mg_common_game.dart';
+import 'package:mg_common_game/core/engine/event_bus.dart';
+import 'package:mg_common_game/core/systems/save_system.dart';
 import 'features/home/main_game_screen.dart';
-import 'game/logic/game_manager.dart';
-import 'game/logic/stage_manager.dart';
-import 'game/logic/inventory_logic.dart';
-import 'game/logic/prestige_manager.dart';
-import 'game/combat_manager.dart';
-import 'game/squad_manager.dart';
-import 'game/equipment_manager.dart';
 import 'screens/daily_quest_screen.dart';
 import 'screens/achievement_screen.dart';
 import 'screens/collection_screen.dart';
-import 'game/tutorial_config.dart';
-import 'game/balancing_config.dart';
-
-// ============================================================
-// Mercenary Brigade — MG-0003
-// Genre: RPG · Battle · Squad · India Region
-// Phase 1 Week 3: RPG Mechanic Enhancement
-//
-// Core loop: Recruit → Equip → Battle → Upgrade → Prestige
-// Subsystems: Combat, Squad formation, Equipment, Upgrades (8)
-// ============================================================
+import 'game/logic/stage_manager.dart';
+import 'game/logic/inventory_logic.dart';
+import 'game/logic/prestige_manager.dart' as game_logic;
+import 'game/logic/game_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await _setupDI();
-  // ── Tutorial & Balancing (v1.2.0 pilot) ─────────────────────
-  if (!GetIt.I.isRegistered<TutorialManager>()) {
-    final tutorialManager = TutorialManager();
-    await tutorialManager.initialize();
-    tutorialManager.registerTutorial(
-      kOnboardingTutorial.id,
-      kOnboardingTutorial.steps,
-    );
-    GetIt.I.registerSingleton<TutorialManager>(tutorialManager);
-  }
-  if (!GetIt.I.isRegistered<BalancingManager>()) {
-    GetIt.I.registerSingleton<BalancingManager>(
-      BalancingManager(defaultConfig: kDefaultBalancingConfig),
-    );
-  }
-  // ── Q7 DI Fix: Missing Systems ──────────────────────────
-  if (!GetIt.I.isRegistered<BattlePassManager>()) {
-    GetIt.I.registerSingleton<BattlePassManager>(BattlePassManager());
-  }
-  if (!GetIt.I.isRegistered<GachaManager>()) {
-    GetIt.I.registerSingleton<GachaManager>(GachaManager());
-  }
-
   runApp(const MercenaryApp());
 }
 
-/// Initialize all DI-registered systems in correct dependency order.
-/// Core systems first, then game logic, then combat/squad/equipment,
-/// and finally the UpgradeManager with 8 registered upgrades.
 Future<void> _setupDI() async {
   final getIt = GetIt.I;
 
-  // ── Core systems ─────────────────────────────────────────────
-  getIt.registerSingleton<AudioManager>(AudioManager());
-  await getIt<AudioManager>().initialize();
-
-  // ── Economy ──────────────────────────────────────────────────
-  getIt.registerSingleton<GoldManager>(GoldManager());
-
-  // ── Game logic ───────────────────────────────────────────────
-  getIt.registerSingleton<StageManager>(StageManager());
-  getIt.registerSingleton<GameManager>(GameManager(getIt<GoldManager>()));
-  getIt.registerSingleton<InventoryLogic>(InventoryLogic());
-  getIt.registerSingleton<PrestigeManager>(PrestigeManager());
-
-  // ── Combat & squad systems ───────────────────────────────────
-  getIt.registerSingleton<CombatManager>(CombatManager());
-  getIt.registerSingleton<SquadManager>(SquadManager());
-  getIt.registerSingleton<EquipmentManager>(EquipmentManager());
-
-  // ── Upgrade system ───────────────────────────────────────────
-  final upgradeManager = UpgradeManager();
-  getIt.registerSingleton<UpgradeManager>(upgradeManager);
-  // DailyQuest 시스템
-  GetIt.I.registerSingleton(DailyQuestManager());
-  // Achievement 시스템
-  GetIt.I.registerSingleton(AchievementManager());
-  // Collection 시스템
-  if (!GetIt.I.isRegistered<CollectionManager>()) {
-    GetIt.I.registerSingleton(CollectionManager());
-  // ── Retention Systems for DailyHub ────────────────────────
-  if (!GetIt.I.isRegistered<LoginRewardsManager>()) {
-    GetIt.I.registerSingleton(LoginRewardsManager());
+  // Core services
+  if (!getIt.isRegistered<EventBus>()) {
+    getIt.registerSingleton<EventBus>(EventBus());
   }
-  if (!GetIt.I.isRegistered<StreakManager>()) {
-    GetIt.I.registerSingleton(StreakManager());
+
+  if (!getIt.isRegistered<SaveSystem>()) {
+    final saveSystem = LocalSaveSystem();
+    await saveSystem.init();
+    getIt.registerSingleton<SaveSystem>(saveSystem);
   }
-  if (!GetIt.I.isRegistered<DailyChallengeManager>()) {
-    GetIt.I.registerSingleton(DailyChallengeManager());
+
+  if (!getIt.isRegistered<GoldManager>()) {
+    getIt.registerSingleton<GoldManager>(GoldManager());
+  }
+
+  if (!getIt.isRegistered<AudioManager>()) {
+    getIt.registerSingleton<AudioManager>(AudioManager());
+    try {
+      await getIt<AudioManager>().initialize();
+    } catch (e) {
+      // Audio initialization may fail in test environment
+      print('Audio initialization skipped: $e');
+    }
+  }
+
+  if (!getIt.isRegistered<GameManager>()) {
+    getIt.registerSingleton<GameManager>(
+      GameManager(getIt<GoldManager>()),
+    );
+  }
+
+  // Battlepass & Gacha
+  if (!getIt.isRegistered<BattlePassManager>()) {
+    getIt.registerSingleton<BattlePassManager>(BattlePassManager());
+  }
+
+  if (!getIt.isRegistered<GachaManager>()) {
+    getIt.registerSingleton<GachaManager>(GachaManager());
+  }
+
+  // Daily Quest
+  if (!getIt.isRegistered<DailyQuestManager>()) {
+    final questManager = DailyQuestManager();
+
+    // Register Mercenary Guild themed quests
+    questManager.registerQuest(DailyQuest(
+      id: 'mercenary_missions_5',
+      title: 'Mission Specialist',
+      description: 'Complete 5 mercenary missions',
+      targetValue: 5,
+      goldReward: 200,
+      xpReward: 50,
+    ));
+
+    questManager.registerQuest(DailyQuest(
+      id: 'mercenary_hire_3',
+      title: 'Squad Leader',
+      description: 'Hire 3 new mercenaries',
+      targetValue: 3,
+      goldReward: 150,
+      xpReward: 40,
+    ));
+
+    questManager.registerQuest(DailyQuest(
+      id: 'mercenary_gold_1500',
+      title: 'Mercenary Wealth',
+      description: 'Earn 1500 gold from missions',
+      targetValue: 1500,
+      goldReward: 250,
+      xpReward: 75,
+    ));
+
+    getIt.registerSingleton<DailyQuestManager>(questManager);
+  }
+
+  // Achievement
+  if (!getIt.isRegistered<AchievementManager>()) {
+    getIt.registerSingleton<AchievementManager>(AchievementManager());
+  }
+
+  // Collection
+  if (!getIt.isRegistered<CollectionManager>()) {
+    getIt.registerSingleton<CollectionManager>(CollectionManager());
+  }
+
+  // Game-specific managers
+  if (!getIt.isRegistered<StageManager>()) {
+    getIt.registerSingleton<StageManager>(StageManager());
+  }
+
+  if (!getIt.isRegistered<InventoryLogic>()) {
+    getIt.registerSingleton<InventoryLogic>(InventoryLogic());
+  }
+
+  if (!getIt.isRegistered<game_logic.PrestigeManager>()) {
+    getIt.registerSingleton<game_logic.PrestigeManager>(game_logic.PrestigeManager());
+  }
 }
-  // ── P3 Engine Systems ─────────────────────────────────────
-  if (!GetIt.I.isRegistered<GuildWarManager>()) {
-    GetIt.I.registerSingleton(GuildWarManager());
-  }
-  if (!GetIt.I.isRegistered<TournamentManager>()) {
-    GetIt.I.registerSingleton(TournamentManager());
-  }
-  if (!GetIt.I.isRegistered<SeasonalContentManager>()) {
-    GetIt.I.registerSingleton(SeasonalContentManager());
-  }
-    _registerCollections();
-  }
-  _registerAchievements();
-  _registerDailyQuests();
-  _registerUpgrades(upgradeManager);
-  await upgradeManager.loadUpgrades();
-
-  // Apply saved upgrade levels to runtime managers
-  _applyUpgradeEffects();
-}
-
-// ============================================================
-// Upgrade Registration — 8 mercenary RPG upgrades
-//
-// Categories:
-//   Combat (4): attack_damage, crit_chance, skill_cooldown, combo_multiplier
-//   Squad  (2): squad_size, formation_bonus
-//   Equip  (2): gear_slots, stat_multiplier
-// ============================================================
-
-void _registerUpgrades(UpgradeManager manager) {
-  // ── Combat upgrades (4) ──────────────────────────────────────
-
-  manager.registerUpgrade(Upgrade(
-    id: 'attack_damage',
-    name: 'Blade Sharpening',
-    description: 'Hone mercenary weapons to increase base attack damage by 10% per level.',
-    maxLevel: 15,
-    baseCost: 100,
-    costMultiplier: 1.4,
-    valuePerLevel: 0.10, // +10% damage per level
-  ));
-
-  manager.registerUpgrade(Upgrade(
-    id: 'crit_chance',
-    name: 'Precision Training',
-    description: 'Train mercenaries in weak-point targeting, adding 3% crit chance per level.',
-    maxLevel: 10,
-    baseCost: 200,
-    costMultiplier: 1.5,
-    valuePerLevel: 0.03, // +3% crit per level
-  ));
-
-  manager.registerUpgrade(Upgrade(
-    id: 'skill_cooldown',
-    name: 'Battle Reflexes',
-    description: 'Sharpen reflexes to reduce skill cooldowns by 5% per level.',
-    maxLevel: 8,
-    baseCost: 250,
-    costMultiplier: 1.6,
-    valuePerLevel: 0.05, // 5% cooldown reduction per level
-  ));
-
-  manager.registerUpgrade(Upgrade(
-    id: 'combo_multiplier',
-    name: 'Combo Mastery',
-    description: 'Master chain attacks, boosting combo damage multiplier by 15% per level.',
-    maxLevel: 10,
-    baseCost: 180,
-    costMultiplier: 1.45,
-    valuePerLevel: 0.15, // +15% combo multiplier per level
-  ));
-
-  // ── Squad upgrades (2) ───────────────────────────────────────
-
-  manager.registerUpgrade(Upgrade(
-    id: 'squad_size',
-    name: 'Mercenary Barracks',
-    description: 'Expand barracks to recruit one additional squad member per level.',
-    maxLevel: 5,
-    baseCost: 500,
-    costMultiplier: 2.0,
-    valuePerLevel: 1.0, // +1 squad slot per level
-  ));
-
-  manager.registerUpgrade(Upgrade(
-    id: 'formation_bonus',
-    name: 'Tactical Formations',
-    description: 'Unlock advanced formations granting 8% damage and 4% defense per level.',
-    maxLevel: 10,
-    baseCost: 300,
-    costMultiplier: 1.5,
-    valuePerLevel: 0.08, // +8% formation bonus per level
-  ));
-
-  // ── Equipment upgrades (2) ───────────────────────────────────
-
-  manager.registerUpgrade(Upgrade(
-    id: 'gear_slots',
-    name: 'Armory Expansion',
-    description: 'Add one equipment slot per hero for each level.',
-    maxLevel: 5,
-    baseCost: 400,
-    costMultiplier: 1.8,
-    valuePerLevel: 1.0, // +1 gear slot per level
-  ));
-
-  manager.registerUpgrade(Upgrade(
-    id: 'stat_multiplier',
-    name: 'Enchanted Gear',
-    description: 'Magical enchantments boost all gear stat bonuses by 12% per level.',
-    maxLevel: 10,
-    baseCost: 350,
-    costMultiplier: 1.55,
-    valuePerLevel: 0.12, // +12% stat multiplier per level
-  ));
-}
-
-// ============================================================
-// Apply Upgrade Effects — Sync upgrade levels to managers
-// ============================================================
-
-/// Push current upgrade values into CombatManager, SquadManager,
-/// and EquipmentManager so they reflect the latest saved state.
-void _applyUpgradeEffects() {
-  final di = GetIt.I;
-
-  // Managers read from UpgradeManager via getters, so refreshing
-  // just notifies their listeners to rebuild dependent UI.
-  di<CombatManager>().refreshFromUpgrades();
-  di<SquadManager>().refreshFromUpgrades();
-  di<EquipmentManager>().refreshFromUpgrades();
-}
-
-// ============================================================
-// App Root — Year 1 dark theme with green/gold accents
-// ============================================================
 
 class MercenaryApp extends StatelessWidget {
   const MercenaryApp({super.key});
@@ -244,409 +129,21 @@ class MercenaryApp extends StatelessWidget {
     return MaterialApp(
       title: 'Pixel Mercenary Guild',
       debugShowCheckedModeBanner: false,
-      theme: _buildMercenaryTheme(),
+      theme: ThemeData.dark(useMaterial3: true).copyWith(
+        primaryColor: const Color(0xFF4CAF50),
+        colorScheme: const ColorScheme.dark(
+          primary: Color(0xFF4CAF50),
+          secondary: Color(0xFF03DAC6),
+        ),
+      ),
       routes: {
         '/daily-quest': (_) => const DailyQuestScreen(),
         '/achievements': (_) => const AchievementScreen(),
-        '/daily-hub': (context) => DailyHubScreen(
-          questManager: GetIt.I<DailyQuestManager>(),
-          loginRewardsManager: GetIt.I<LoginRewardsManager>(),
-          streakManager: GetIt.I<StreakManager>(),
-          challengeManager: GetIt.I<DailyChallengeManager>(),
-          accentColor: MGColors.primaryAction,
-          onClose: () => Navigator.pop(context),
-        ),
-      
         '/collection': (context) => CollectionScreen(
           collectionManager: GetIt.I<CollectionManager>(),
         ),
-        '/guild-war': (context) => GuildWarScreen(
-          guildWarManager: GetIt.I<GuildWarManager>(),
-          accentColor: MGColors.primaryAction,
-          onClose: () => Navigator.pop(context),
-          ),
-        '/tournament': (context) => TournamentScreen(
-          tournamentManager: GetIt.I<TournamentManager>(),
-          accentColor: MGColors.primaryAction,
-          onClose: () => Navigator.pop(context),
-          ),
-        '/seasonal-event': (context) => SeasonalEventScreen(
-          seasonalContentManager: GetIt.I<SeasonalContentManager>(),
-          accentColor: MGColors.primaryAction,
-          onClose: () => Navigator.pop(context),
-          ),
-},
+      },
       home: const MainGameScreen(),
     );
   }
-
-  /// Year 1 Core dark theme tuned for RPG aesthetics.
-  /// Uses MGColors.year1Primary (green) with gold resource accents.
-  ThemeData _buildMercenaryTheme() {
-    return ThemeData(
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: MGColors.year1Primary,
-        brightness: Brightness.dark,
-      ),
-      useMaterial3: true,
-      scaffoldBackgroundColor: MGColors.backgroundDark,
-      appBarTheme: const AppBarTheme(
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: MGColors.surfaceDark,
-      ),
-      cardTheme: CardThemeData(
-        color: MGColors.cardDark,
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ============================================================
-// MercenaryUpgradePanel — Upgrade display widget
-//
-// A self-contained widget showing all 8 upgrades grouped by
-// category. Reads UpgradeManager and GoldManager from GetIt.
-// Can be embedded in any screen via MercenaryUpgradePanel().
-// ============================================================
-
-class MercenaryUpgradePanel extends StatefulWidget {
-  const MercenaryUpgradePanel({super.key});
-
-  @override
-  State<MercenaryUpgradePanel> createState() => _MercenaryUpgradePanelState();
-}
-
-class _MercenaryUpgradePanelState extends State<MercenaryUpgradePanel> {
-  static const _combatIds = [
-    'attack_damage',
-    'crit_chance',
-    'skill_cooldown',
-    'combo_multiplier',
-  ];
-  static const _squadIds = ['squad_size', 'formation_bonus'];
-  static const _equipIds = ['gear_slots', 'stat_multiplier'];
-
-  @override
-  Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: GetIt.I<UpgradeManager>(),
-      builder: (context, _) {
-        return ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            _buildCategoryHeader('Combat Upgrades', Icons.local_fire_department),
-            ..._combatIds.map(_buildUpgradeCard),
-            const SizedBox(height: 16),
-            _buildCategoryHeader('Squad Upgrades', Icons.groups),
-            ..._squadIds.map(_buildUpgradeCard),
-            const SizedBox(height: 16),
-            _buildCategoryHeader('Equipment Upgrades', Icons.shield),
-            ..._equipIds.map(_buildUpgradeCard),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildCategoryHeader(String title, IconData icon) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        children: [
-          Icon(icon, color: MGColors.year1Accent, size: 20),
-          const SizedBox(width: 8),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: MGColors.textHighEmphasis,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildUpgradeCard(String upgradeId) {
-    final upgradeManager = GetIt.I<UpgradeManager>();
-    final goldManager = GetIt.I<GoldManager>();
-    final upgrade = upgradeManager.getUpgrade(upgradeId);
-
-    if (upgrade == null) return const SizedBox.shrink();
-
-    final isMaxed = upgrade.currentLevel >= upgrade.maxLevel;
-    final cost = upgrade.costForNextLevel;
-    final canAfford = !isMaxed && goldManager.currentGold >= cost;
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            // Info column
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${upgrade.name}  Lv.${upgrade.currentLevel}/${upgrade.maxLevel}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: MGColors.textHighEmphasis,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    upgrade.description,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: MGColors.textMediumEmphasis,
-                    ),
-                  ),
-                  if (!isMaxed) ...[
-                    const SizedBox(height: 4),
-                    _buildProgressBar(upgrade),
-                  ],
-                ],
-              ),
-            ),
-            const SizedBox(width: 12),
-            // Purchase button
-            _buildPurchaseButton(
-              upgrade: upgrade,
-              upgradeManager: upgradeManager,
-              goldManager: goldManager,
-              isMaxed: isMaxed,
-              canAfford: canAfford,
-              cost: cost,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildProgressBar(Upgrade upgrade) {
-    final progress = upgrade.currentLevel / upgrade.maxLevel;
-    return SizedBox(
-      height: 4,
-      child: LinearProgressIndicator(
-        value: progress,
-        backgroundColor: MGColors.border,
-        valueColor: const AlwaysStoppedAnimation<Color>(MGColors.year1Primary),
-      ),
-    );
-  }
-
-  Widget _buildPurchaseButton({
-    required Upgrade upgrade,
-    required UpgradeManager upgradeManager,
-    required GoldManager goldManager,
-    required bool isMaxed,
-    required bool canAfford,
-    required int cost,
-  }) {
-    if (isMaxed) {
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: MGColors.year1Primary.withValues(alpha: 0.2),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: const Text(
-          'MAX',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: MGColors.year1Primary,
-          ),
-        ),
-      );
-    }
-
-    return ElevatedButton(
-      onPressed: canAfford
-          ? () {
-              final purchased = upgradeManager.purchaseUpgrade(
-                upgrade.id,
-                () => goldManager.currentGold,
-                (spent) => goldManager.trySpendGold(spent),
-              );
-              if (purchased) {
-                _refreshManagers();
-                setState(() {});
-              }
-            }
-          : null,
-      style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.arrow_upward, size: 16),
-          const SizedBox(height: 2),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(
-                Icons.monetization_on,
-                size: 14,
-                color: MGColors.gold,
-              ),
-              const SizedBox(width: 2),
-              Text(
-                _formatCost(cost),
-                style: const TextStyle(fontSize: 12),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Apply upgrade effects to runtime managers after a purchase.
-  void _refreshManagers() {
-    final di = GetIt.I;
-    di<CombatManager>().refreshFromUpgrades();
-    di<SquadManager>().refreshFromUpgrades();
-    di<EquipmentManager>().refreshFromUpgrades();
-  }
-
-  /// Format large costs with K/M suffixes for readability.
-  String _formatCost(int cost) {
-    if (cost >= 1000000) {
-      return '${(cost / 1000000).toStringAsFixed(1)}M';
-    } else if (cost >= 1000) {
-      return '${(cost / 1000).toStringAsFixed(1)}K';
-    }
-    return cost.toString();
-  }
-}
-
-
-void _registerDailyQuests() {
-  final dailyQuest = GetIt.I<DailyQuestManager>();
-  
-  dailyQuest.registerQuest(DailyQuest(
-    id: 'collect_gold',
-    title: '골드 모으기',
-    description: '골드 1000 획득',
-    targetValue: 1000,
-    goldReward: 500,
-    xpReward: 10,
-  ));
-  
-  dailyQuest.registerQuest(DailyQuest(
-    id: 'play_games',
-    title: '게임 플레이',
-    description: '게임 5판 플레이',
-    targetValue: 5,
-    goldReward: 300,
-    xpReward: 5,
-  ));
-  
-  dailyQuest.registerQuest(DailyQuest(
-    id: 'level_up',
-    title: '레벨업',
-    description: '레벨 1 상승',
-    targetValue: 1,
-    goldReward: 200,
-    xpReward: 3,
-  ));
-}
-
-
-void _registerAchievements() {
-  final achievement = GetIt.I<AchievementManager>();
-  
-  achievement.registerAchievement(Achievement(
-    id: 'gold_1000',
-    title: '골드 1000 달성',
-    description: '총 골드 1000을 모으세요',
-    iconAsset: 'assets/achievements/gold_1000.png',
-  ));
-  
-  achievement.registerAchievement(Achievement(
-    id: 'level_10',
-    title: '레벨 10 달성',
-    description: '레벨 10에 도달하세요',
-    iconAsset: 'assets/achievements/level_10.png',
-  ));
-  
-  achievement.registerAchievement(Achievement(
-    id: 'play_100',
-    title: '100판 플레이',
-    description: '게임을 100판 플레이하세요',
-    iconAsset: 'assets/achievements/play_100.png',
-  ));
-}
-
-void _registerCollections() {
-  final collection = GetIt.I<CollectionManager>();
-
-  // Characters 컬렉션
-  collection.registerCollection(Collection(
-    id: 'characters',
-    name: '캐릭터',
-    description: '모든 캐릭터를 수집하세요',
-    items: [
-      CollectionItem(
-        id: 'char_warrior',
-        name: '전사',
-        description: '강인한 근접 전투 캐릭터',
-        rarity: CollectionRarity.common,
-      ),
-      CollectionItem(
-        id: 'char_mage',
-        name: '마법사',
-        description: '강력한 마법 공격 캐릭터',
-        rarity: CollectionRarity.rare,
-      ),
-      CollectionItem(
-        id: 'char_archer',
-        name: '궁수',
-        description: '원거리 정밀 공격 캐릭터',
-        rarity: CollectionRarity.rare,
-      ),
-      CollectionItem(
-        id: 'char_assassin',
-        name: '암살자',
-        description: '치명적인 은신 공격 캐릭터',
-        rarity: CollectionRarity.epic,
-      ),
-      CollectionItem(
-        id: 'char_healer',
-        name: '힐러',
-        description: '팀을 치유하는 지원 캐릭터',
-        rarity: CollectionRarity.legendary,
-      ),
-    ],
-    completionReward: CollectionReward(type: RewardType.gold, amount: 10000),
-    milestoneRewards: {
-      25: CollectionReward(type: RewardType.gold, amount: 1000),
-      50: CollectionReward(type: RewardType.gold, amount: 3000),
-      75: CollectionReward(type: RewardType.gold, amount: 5000),
-    },
-  ));
-
-  // 아이템 해제 콜백 (햅틱 피드백)
-  collection.onItemUnlocked = (collectionId, itemId) {
-    // SettingsManager가 등록되어 있으면 햅틱 피드백
-    debugPrint('Collection item unlocked: $collectionId / $itemId');
-  };
 }

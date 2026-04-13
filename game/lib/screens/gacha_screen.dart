@@ -1,7 +1,8 @@
 // ============================================================
-// Gacha Screen — MG-0003 Pixel Mercenary Guild
+// Gacha Screen -- MG-0003 Pixel Mercenary Guild
 // Genre: Puzzle RPG · Gacha System UI
 // ============================================================
+
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';

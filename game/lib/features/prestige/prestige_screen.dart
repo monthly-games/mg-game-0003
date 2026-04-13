@@ -4,6 +4,7 @@ import '../../game/logic/prestige_manager.dart';
 import '../../game/logic/stage_manager.dart';
 import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
 
+
 class PrestigeScreen extends StatelessWidget {
   const PrestigeScreen({super.key});
 
@@ -150,7 +151,7 @@ class PrestigeScreen extends StatelessWidget {
             backgroundColor: canAfford ? MGColors.info : MGColors.common,
           ),
           onPressed: canAfford ? onTap : null,
-          child: Text('$cost Relics'),
+          child: const Text('Cost Relics'),
         ),
       ),
     );

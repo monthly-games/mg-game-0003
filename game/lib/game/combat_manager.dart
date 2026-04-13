@@ -3,7 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:mg_common_game/systems/progression/upgrade_manager.dart';
 
 // ============================================================
-// CombatManager — MG-0003 Mercenary Brigade
+// CombatManager -- MG-0003 Mercenary Brigade
 //
 // Manages combat stat bonuses derived from UpgradeManager levels.
 // Upgrades: attack_damage, crit_chance, skill_cooldown, combo_multiplier
@@ -54,9 +54,9 @@ class CombatManager extends ChangeNotifier {
 
   /// Calculate total damage output for a single hit.
   ///
-  /// [baseHeroDamage] — raw ATK stat from the hero.
-  /// [isCrit] — whether this hit is a critical strike.
-  /// [comboCount] — current combo chain length (0 = no combo).
+  /// [baseHeroDamage] -- raw ATK stat from the hero.
+  /// [isCrit] -- whether this hit is a critical strike.
+  /// [comboCount] -- current combo chain length (0 = no combo).
   double calculateDamage(
     double baseHeroDamage, {
     bool isCrit = false,

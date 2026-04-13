@@ -3,7 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:mg_common_game/systems/progression/upgrade_manager.dart';
 
 // ============================================================
-// EquipmentManager — MG-0003 Mercenary Brigade
+// EquipmentManager -- MG-0003 Mercenary Brigade
 //
 // Manages gear slot capacity and equipment stat bonuses.
 // Upgrades: gear_slots, stat_multiplier
@@ -45,7 +45,7 @@ class EquipmentManager extends ChangeNotifier {
 
   /// Calculate total gear bonus for a stat across all equipped items.
   ///
-  /// [rawBonuses] — list of raw stat values from equipped gear pieces.
+  /// [rawBonuses] -- list of raw stat values from equipped gear pieces.
   double totalGearBonus(List<double> rawBonuses) {
     if (rawBonuses.isEmpty) return 0.0;
     final sum = rawBonuses.fold(0.0, (acc, v) => acc + v);

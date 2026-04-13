@@ -1,6 +1,6 @@
 // ignore_for_file: depend_on_referenced_packages
 // ============================================================
-// Achievement Screen — MG-0003 Mercenary RPG
+// Achievement Screen -- MG-0003 Mercenary RPG
 // Genre: RPG · Retention System UI
 //
 // Firebase Analytics Events:

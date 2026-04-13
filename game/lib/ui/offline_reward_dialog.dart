@@ -1,3 +1,4 @@
+import 'package:mg_common_game/core/ui/layout/mg_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import '../game/logic/game_manager.dart';
@@ -14,12 +15,12 @@ class OfflineRewardDialog extends StatelessWidget {
       backgroundColor: const Color(0xFF222222),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(MGSpacing.lg),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             const Icon(Icons.access_time_filled, color: Colors.amber, size: 48),
-            const SizedBox(height: 16),
+            const SizedBox(height: MGSpacing.md),
             const Text(
               'Welcome Back!',
               style: TextStyle(
@@ -28,15 +29,15 @@ class OfflineRewardDialog extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: MGSpacing.xs),
             const Text(
               'While you were away, your mercenaries\ncollected some loot.',
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white70),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: MGSpacing.lg),
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(MGSpacing.md),
               decoration: BoxDecoration(
                 color: Colors.black26,
                 borderRadius: BorderRadius.circular(8),
@@ -46,7 +47,7 @@ class OfflineRewardDialog extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text('💰', style: TextStyle(fontSize: 24)),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: MGSpacing.xs),
                   Text(
                     '$goldEarned G',
                     style: const TextStyle(
@@ -58,7 +59,7 @@ class OfflineRewardDialog extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: MGSpacing.lg),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(

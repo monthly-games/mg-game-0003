@@ -67,7 +67,7 @@ class MGTopBar extends StatelessWidget {
                     size: 16,
                     color: MGColors.textHighEmphasis,
                   ),
-                  const SizedBox(width: 4),
+                  const SizedBox(width: MGSpacing.xxs),
                   Text(
                     'Stage $stageLevel',
                     style: MGTextStyles.hudSmall.copyWith(

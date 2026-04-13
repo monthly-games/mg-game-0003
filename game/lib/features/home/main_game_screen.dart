@@ -13,6 +13,7 @@ import '../shop/shop_screen.dart';
 import '../guild/guild_screen.dart';
 import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
 
+
 class MainGameScreen extends StatefulWidget {
   const MainGameScreen({super.key});
 
@@ -81,28 +82,28 @@ class _MainGameScreenState extends State<MainGameScreen> {
         selectedItemColor: AppColors.primary,
         unselectedItemColor: MGColors.common,
         items: const [
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.colorize), // Sword-like
-            label: 'Battle',
+            label: 'Battle Pass',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Heroes'),
-          BottomNavigationBarItem(icon: Icon(Icons.backpack), label: 'Bag'),
-          BottomNavigationBarItem(icon: Icon(Icons.store), label: 'Shop'),
-          BottomNavigationBarItem(icon: Icon(Icons.shield), label: 'Guild'),
-          BottomNavigationBarItem(icon: Icon(Icons.star), label: 'Prestige'),
+          const BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Recruit'),
+          const BottomNavigationBarItem(icon: Icon(Icons.backpack), label: 'Bag'),
+          const BottomNavigationBarItem(icon: Icon(Icons.store), label: 'Shop'),
+          const BottomNavigationBarItem(icon: Icon(Icons.shield), label: 'Guild'),
+          const BottomNavigationBarItem(icon: Icon(Icons.star), label: 'Prestige'),
         ],
       ),
     );
   }
 
   Widget _buildTopBar() {
-    return StreamBuilder<int>(
-      stream: GetIt.I<GoldManager>().onGoldChanged,
-      initialData: GetIt.I<GoldManager>().currentGold,
-      builder: (ctx, snapshot) {
+    return AnimatedBuilder(
+      animation: GetIt.I<GoldManager>(),
+      builder: (ctx, child) {
         final stageManager = GetIt.I<StageManager>();
+        final goldManager = GetIt.I<GoldManager>();
         return MGTopBar(
-          gold: snapshot.data ?? 0,
+          gold: goldManager.currentGold,
           stageLevel: stageManager.currentStage,
           onDailyHub: () => Navigator.of(context).pushNamed('/daily-hub'),
           onGuildWar: () {

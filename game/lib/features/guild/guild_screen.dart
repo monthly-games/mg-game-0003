@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:mg_common_game/core/economy/gold_manager.dart';
 import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
 
+
 class GuildScreen extends StatefulWidget {
   const GuildScreen({super.key});
 
@@ -99,6 +100,6 @@ class _GuildScreenState extends State<GuildScreen> {
     GetIt.I<GoldManager>().addGold(500);
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Received 500 Gold!')));
+    ).showSnackBar(const SnackBar(content: Text('Received 500 gold!')));
   }
 }

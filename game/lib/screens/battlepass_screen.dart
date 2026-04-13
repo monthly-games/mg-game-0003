@@ -1,6 +1,6 @@
 // ignore_for_file: depend_on_referenced_packages, unused_local_variable
 // ============================================================
-// BattlePass Screen — MG-0003 Pixel Mercenary Guild
+// BattlePass Screen -- MG-0003 Pixel Mercenary Guild
 // Genre: Puzzle RPG · Retention System UI
 //
 // Firebase Analytics Events:
@@ -12,6 +12,7 @@
 //
 // Template: This file is the canonical template for 47 remaining games.
 // ============================================================
+
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
@@ -162,7 +163,7 @@ class _BattlePassScreenState extends State<BattlePassScreen>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${rewards.length} rewards claimed!'),
+            content: Text('Claimed'),
             backgroundColor: MGColors.success,
             duration: const Duration(seconds: 2),
           ),
@@ -175,7 +176,7 @@ class _BattlePassScreenState extends State<BattlePassScreen>
     final names = rewards.map((r) => r.nameKr).join(', ');
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Tier $level: $names'),
+        content: Text('Level'),
         backgroundColor: MGColors.success,
         duration: const Duration(seconds: 2),
       ),
@@ -188,7 +189,7 @@ class _BattlePassScreenState extends State<BattlePassScreen>
 
     if (season == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('BattlePass')),
+        appBar: AppBar(title: const Text('Battle Pass')),
         body: const Center(
           child: Text(
             'No active season',
@@ -238,7 +239,7 @@ class _BattlePassScreenState extends State<BattlePassScreen>
               const Spacer(),
               if (_bpManager.unclaimedRewardCount > 0)
                 MGButton(
-                  label: 'Claim All (${_bpManager.unclaimedRewardCount})',
+                  label: 'Claim All',
                   size: MGButtonSize.small,
                   icon: Icons.done_all,
                   backgroundColor: MGColors.success,

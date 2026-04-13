@@ -6,6 +6,7 @@ import '../../game/logic/inventory_logic.dart';
 import '../../game/data/equipment.dart';
 import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
 
+
 class ShopScreen extends StatelessWidget {
   const ShopScreen({super.key});
 
@@ -14,9 +15,8 @@ class ShopScreen extends StatelessWidget {
     final goldManager = GetIt.I<GoldManager>();
     final inventory = GetIt.I<InventoryLogic>();
 
-    return StreamBuilder<int>(
-      stream: goldManager.onGoldChanged,
-      initialData: goldManager.currentGold,
+    return AnimatedBuilder(
+            animation: goldManager,
       builder: (context, _) {
         return Padding(
           padding: const EdgeInsets.all(16.0),
@@ -114,7 +114,7 @@ class ShopScreen extends StatelessWidget {
                       inventory,
                     )
                   : null,
-              child: Text('$cost G'),
+              child: const Text('Buy'),
             ),
           ],
         ),
