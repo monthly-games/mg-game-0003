@@ -11,7 +11,7 @@ class MonsterEntity extends SpriteComponent with HasGameReference {
   MonsterEntity({
     required Vector2 position,
     this.isBoss = false,
-    double hpMultiplier = 1.0,
+    double hpMultiplier = 0.614,
   }) : super(
          position: position,
          size: isBoss ? Vector2.all(64) : Vector2.all(32),

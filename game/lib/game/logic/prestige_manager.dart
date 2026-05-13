@@ -10,7 +10,7 @@ class PrestigeManager extends ChangeNotifier implements Saveable {
 
   // Multipliers (Persistent Upgrades)
   double goldMultiplier = 1.0;
-  double damageMultiplier = 1.0;
+  double damageMultiplier = 0.614;
 
   // Upgrade Levels
   int goldUpgradeLevel = 0;

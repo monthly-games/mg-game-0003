@@ -15,7 +15,7 @@ class CombatManager extends ChangeNotifier {
   static const double baseCritChance = 0.05;
   static const double baseSkillCooldown = 10.0; // seconds
   static const double baseComboMultiplier = 1.0;
-  static const double critDamageMultiplier = 2.0;
+  static const double critDamageMultiplier = 1.228;
   static const double comboScaling = 0.1; // per combo hit
 
   // ── Upgrade-derived getters ──────────────────────────────────
