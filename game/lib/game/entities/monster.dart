@@ -1,16 +1,19 @@
 import 'package:flame/components.dart';
 import 'package:flame/palette.dart';
 import 'package:flutter/material.dart';
+import '../systems/element_system.dart';
 
 class MonsterEntity extends SpriteComponent with HasGameReference {
   double maxHp = 50;
   double hp = 50;
   double speed = 50;
   final bool isBoss;
+  final ElementType element;
 
   MonsterEntity({
     required Vector2 position,
     this.isBoss = false,
+    this.element = ElementType.grass,
     double hpMultiplier = 1.0,
   }) : super(
          position: position,

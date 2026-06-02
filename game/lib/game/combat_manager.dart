@@ -1,12 +1,15 @@
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mg_common_game/systems/progression/upgrade_manager.dart';
+import 'systems/element_system.dart';
+import 'systems/combo_system.dart';
 
 // ============================================================
 // CombatManager -- MG-0003 Mercenary Brigade
 //
 // Manages combat stat bonuses derived from UpgradeManager levels.
 // Upgrades: attack_damage, crit_chance, skill_cooldown, combo_multiplier
+// Now includes: Element system advantages and Chain combo detection
 // ============================================================
 
 class CombatManager extends ChangeNotifier {
@@ -17,6 +20,9 @@ class CombatManager extends ChangeNotifier {
   static const double baseComboMultiplier = 1.0;
   static const double critDamageMultiplier = 2.0;
   static const double comboScaling = 0.1; // per combo hit
+
+  // ── System instances ─────────────────────────────────────────
+  final ComboSystem _comboSystem = ComboSystem();
 
   // ── Upgrade-derived getters ──────────────────────────────────
 
@@ -50,14 +56,50 @@ class CombatManager extends ChangeNotifier {
     return baseComboMultiplier + (upgrade?.currentValue ?? 0.0);
   }
 
+  /// Get current combo system instance
+  ComboSystem get comboSystem => _comboSystem;
+
   // ── Combat calculations ──────────────────────────────────────
 
-  /// Calculate total damage output for a single hit.
+  /// Calculate total damage output for a single hit with element and combo support.
+  ///
+  /// [baseHeroDamage] -- raw ATK stat from the hero.
+  /// [attackerElement] -- element type of the attacking hero.
+  /// [targetElement] -- element type of the target monster.
+  /// [heroId] -- unique ID of the attacking hero (for combo tracking).
+  /// [isCrit] -- whether this hit is a critical strike.
+  double calculateDamage(
+    double baseHeroDamage,
+    ElementType attackerElement,
+    ElementType targetElement,
+    String heroId, {
+    bool isCrit = false,
+  }) {
+    double damage = baseHeroDamage * attackDamageMultiplier;
+
+    // Apply elemental advantage/disadvantage
+    final elementMultiplier = attackerElement.getAdvantageMultiplier(targetElement);
+    damage *= elementMultiplier;
+
+    // Apply critical hit multiplier
+    if (isCrit) {
+      damage *= critDamageMultiplier;
+    }
+
+    // Apply combo system
+    final comboMultiplier = _comboSystem.recordAttack(heroId, DateTime.now());
+    damage *= comboMultiplier;
+
+    return damage;
+  }
+
+  /// Legacy damage calculation method (for backward compatibility).
   ///
   /// [baseHeroDamage] -- raw ATK stat from the hero.
   /// [isCrit] -- whether this hit is a critical strike.
   /// [comboCount] -- current combo chain length (0 = no combo).
-  double calculateDamage(
+  @deprecated
+  double calculateLegacyDamage(
     double baseHeroDamage, {
     bool isCrit = false,
     int comboCount = 0,
@@ -79,4 +121,15 @@ class CombatManager extends ChangeNotifier {
   void refreshFromUpgrades() {
     notifyListeners();
   }
+
+  /// Reset combo system (call when combat ends or heroes die).
+  void resetCombo() {
+    _comboSystem.resetCombo();
+  }
+
+  /// Get current combo count for UI display.
+  int get currentComboCount => _comboSystem.currentCombo;
+
+  /// Get current combo tier for UI display.
+  ComboTier get currentComboTier => _comboSystem.comboTier;
 }

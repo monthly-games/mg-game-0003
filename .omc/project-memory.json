@@ -1,0 +1,122 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1779377020789,
+  "projectRoot": "D:\\mg-games\\repos\\mg-game-0003",
+  "techStack": {
+    "languages": [],
+    "frameworks": [],
+    "packageManager": null,
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": null,
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "assets",
+      "docs"
+    ],
+    "gitBranches": null
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "analytics": {
+      "path": "analytics",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1779377020773,
+      "keyFiles": []
+    },
+    "assets": {
+      "path": "assets",
+      "purpose": "Static assets",
+      "fileCount": 0,
+      "lastAccessed": 1779377020774,
+      "keyFiles": []
+    },
+    "backend": {
+      "path": "backend",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1779377020774,
+      "keyFiles": []
+    },
+    "config": {
+      "path": "config",
+      "purpose": "Configuration files",
+      "fileCount": 1,
+      "lastAccessed": 1779377020774,
+      "keyFiles": [
+        "game_manifest.json"
+      ]
+    },
+    "docs": {
+      "path": "docs",
+      "purpose": "Documentation",
+      "fileCount": 5,
+      "lastAccessed": 1779377020774,
+      "keyFiles": [
+        "bm_design.md",
+        "fun_design.md",
+        "monetization_design.md",
+        "ops_design.md",
+        "production_design.md"
+      ]
+    },
+    "game": {
+      "path": "game",
+      "purpose": null,
+      "fileCount": 13,
+      "lastAccessed": 1779377020775,
+      "keyFiles": [
+        "analysis_options.yaml",
+        "build.log",
+        "firebase.json",
+        "hs_err_pid75188.log",
+        "hs_err_pid83096.log"
+      ]
+    },
+    "libs": {
+      "path": "libs",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1779377020775,
+      "keyFiles": []
+    },
+    "marketing": {
+      "path": "marketing",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1779377020775,
+      "keyFiles": []
+    },
+    "game\\assets": {
+      "path": "game\\assets",
+      "purpose": "Static assets",
+      "fileCount": 1,
+      "lastAccessed": 1779377020776,
+      "keyFiles": []
+    },
+    "game\\build": {
+      "path": "game\\build",
+      "purpose": "Build output",
+      "fileCount": 0,
+      "lastAccessed": 1779377020777,
+      "keyFiles": []
+    }
+  },
+  "hotPaths": [],
+  "userDirectives": []
+}

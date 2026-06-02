@@ -20,3 +20,12 @@ const List<TutorialStep> kOnboardingSteps = [
     description: 'Purchase upgrades from the shop to increase income.',
   ),
 ];
+
+const kOnboardingTutorial = TutorialConfig(
+  id: 'onboarding',
+  name: 'Onboarding Tutorial',
+  skippable: true,
+  showOnFirstLaunch: true,
+  trigger: TutorialTrigger.firstLaunch,
+  steps: kOnboardingSteps,
+);
